@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH6EX6: Basic HTML5 Load Video Onto The Canvas</title>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var socket = io.connect('http://localhost:8000/client');
+var running=false;
+var videoCount = 1;
+socket.on('startfeed', function () {
+    running=true;
+    canvasApp();
+    videoElement.load();
+    videoElement.play();
+});
+socket.on('stopfeed', function () {
+    running=false;
+});/*
+socket.on('addvideo', function () {
+    var tempElement = document.createElement("video");
+    videoDiv.appendChild(tempElement);
+    videoCount++;
+    tempElement.setAttribute("id", "stream"+videoCount);
+    tempElement.setAttribute("class", "vstream");
+    tempElement.setAttribute("style", "display:none");
+});*/
+window.addEventListener('load', eventWindowLoaded, false);
+var videoElement;
+var videoDiv;
+function eventWindowLoaded() {
+
+   videoElement = document.createElement("video");
+   videoDiv = document.createElement('div');
+   document.body.appendChild(videoDiv);
+   videoDiv.appendChild(videoElement);
+   videoDiv.setAttribute("style", "display:none;");
+   videoElement.setAttribute("src", "video.ogg");
+   videoElement.play();
+   canvasApp();
+}
+
+function canvasApp() {
+
+function  drawScreen () {
+
+      if(running){         
+      //Background
+      context.fillStyle = '#ffffaa';
+      context.fillRect(0, 0, theCanvas.width, theCanvas.height);
+      //Box
+      //video
+      context.drawImage(videoElement , 85, 30);
+      setTimeout(drawScreen, 33);
+      }else{
+      context.fillStyle = '#ffffff';
+      context.fillRect(0,0,theCanvas.width, theCanvas.height);
+      context.fillStyle = '#000000';
+      context.font = "20pt Arial";
+      context.fillText("Offline",100,100);
+      }
+   }
+
+   var theCanvas = document.getElementById("canvasOne");
+   var context = theCanvas.getContext("2d");
+   
+   setTimeout(drawScreen, 33);
+
+}
+
+</script>
+
+</head>
+<body>
+<div style="position: absolute; top: 50px; left: 50px;">
+
+<canvas id="canvasOne" width="500" height="300">
+ Your browser does not support HTML5 Canvas.
+</canvas>
+</div>
+</body>
+</html>
