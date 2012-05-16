@@ -5,7 +5,7 @@
 <title>CH6EX6: Basic HTML5 Load Video Onto The Canvas</title>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-var socket = io.connect('http://localhost:8000/client');
+var socket = io.connect('http://projectmakeit.com:8000/client');
 var running=false;
 var videoCount = 1;
 socket.on('startfeed', function () {
@@ -36,8 +36,8 @@ function eventWindowLoaded() {
    videoDiv.appendChild(videoElement);
    videoDiv.setAttribute("style", "display:none;");
    videoElement.setAttribute("src", "video.ogg");
-   videoElement.play();
    canvasApp();
+   socket.emit('init client');
 }
 
 function canvasApp() {

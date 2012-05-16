@@ -1,9 +1,18 @@
+<body onLoad="onload()">
+<dev id="live">Offline</dev>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var socket = io.connect('http://localhost:8000/controller');
-socket.on('connect', function () {
-    socket.emit('hi!');
-  });
+var socket = io.connect('http://projectmakeit.com:8000/controller');
+var devLive = document.getElementById('live');
+socket.on('set live', function(live){
+  if(live){
+    console.log('live');
+    devLive.innerHTML="LIVE";
+  }else{
+    console.log('offline');
+    devLive.innerHTML="OFFLINE";
+  }
+});
 function start(){
   socket.emit('feedcontrol', 'start');
   console.log('start feed');
@@ -11,6 +20,10 @@ function start(){
 function stop(){
   socket.emit('feedcontrol', 'stop');
 }
+function onload(){
+  socket.emit('init');
+}
 </script>
 <button onClick="start()">Start feed</button>
 <button onClick="stop()">Stop Feed</button>
+</body>

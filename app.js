@@ -1,6 +1,6 @@
 var app = require('express').createServer()
   , io = require('socket.io').listen(app);
-
+var live=false;
 app.listen(8000);
 
 app.get('/', function (req, res) {
@@ -19,16 +19,28 @@ app.get('/controller/:code', function (req, res) {
 var client = io
   .of('/client')
   .on('connection', function (socket) {
+    socket.on('init client', function(){
+      if(live){
+        socket.emit('startfeed');
+      }
+    });
   });
 var controller = io
   .of('/controller')
   .on('connection', function (socket) {
+    socket.on('init', function(){
+      socket.emit('set live', live);
+    });
     socket.on('feedcontrol', function (action) {
     console.log("feed control :"+action);
     if(action=='start'){
       client.emit('startfeed');
+      live=true;
+      controller.emit('set live', true);
     }else if(action=='stop'){
       client.emit('stopfeed');
+      live=false;
+      controller.emit('set live', false);
     }
   });
   controller.on('hi', function () {
