@@ -12,7 +12,7 @@ app.get('/video.ogg', function (req, res) {
 app.get('/controller/:code', function (req, res) {
   if(req.params.code!='1525'){
      res.send('bad code');
-     return;
+     return;git@github.com:blister75/HTML5-Webcaster.git
   }
   res.sendfile(__dirname + '/control.html');
 });
@@ -42,8 +42,5 @@ var controller = io
       live=false;
       controller.emit('set live', false);
     }
-  });
-  controller.on('hi', function () {
-    console.log("client said hi");
   });
 });

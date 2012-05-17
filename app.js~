@@ -23,7 +23,7 @@ var client = io
 var controller = io
   .of('/controller')
   .on('connection', function (socket) {
-    controller.on('feedcontrol', function (action) {
+    socket.on('feedcontrol', function (action) {
     console.log("feed control :"+action);
     if(action=='start'){
       client.emit('startfeed');
@@ -31,7 +31,7 @@ var controller = io
       client.emit('stopfeed');
     }
   });
-  socket.on('hi', function () {
+  controller.on('hi', function () {
     console.log("client said hi");
   });
 });
