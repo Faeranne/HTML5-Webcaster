@@ -4,60 +4,24 @@
 <meta charset="UTF-8">
 <title>CH6EX6: Basic HTML5 Load Video Onto The Canvas</title>
 <script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript">
-var socket = io.connect('http://localhost:8000/client');
-var running=false;
-var videoCount = 1;
-var theCanvas = document.getElementById("canvasOne");
-var context = theCanvas.getContext("2d");
-socket.on('init return',function(items){
-  videoCount=items.streams.count;
-});
-window.addEventListener('load', eventWindowLoaded, false);
-var videoElement[10];
-var videoDiv;
-var currentStream=0;
-var videoCount=0;
-
-function addVideo(address){
-  videoElement[videoCount] = document.createElement("video");
-  videoDiv.appendChild(videoElement);
-  videoElement.setAttribute("src", address);
-function eventWindowLoaded() {
-   videoDiv = document.createElement('div');
-   document.body.appendChild(videoDiv);
-   videoDiv.setAttribute("style", "display:none;");
-   drawScreen();
-   socket.emit('init client');
-}
-
-function  drawScreen() {
-  if(running){         
-    //Background
-    context.fillStyle = '#ffffaa';
-    context.fillRect(0, 0, theCanvas.width, theCanvas.height);
-    //Box
-    //video
-    context.drawImage(videoElement[currentStream] , 85, 30);
-  }else{
-    context.fillStyle = '#ffffff';
-    context.fillRect(0,0,theCanvas.width, theCanvas.height);
-    context.fillStyle = '#000000';
-    context.font = "20pt Arial";
-    context.fillText("Offline",100,100);
-  }
-  setTimeout(drawScreen, 33);
-}
-
-</script>
-
 </head>
 <body>
 <div style="position: absolute; top: 50px; left: 50px;">
-
+<image id="receiver"></image>
 <canvas id="canvasOne" width="500" height="300">
  Your browser does not support HTML5 Canvas.
 </canvas>
+<script type="text/javascript">
+var socket = io.connect('http://localhost:8000/client');
+var theCanvas = document.getElementById("canvasOne");
+var receiver = document.getElementById('receiver');
+var context = theCanvas.getContext("2d");
+var stream = new Image();
+var active = false;
+socket.on('data', function(data){
+  receiver.src = data;
+});
+</script>
 </div>
 </body>
 </html>
