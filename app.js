@@ -3,7 +3,7 @@ var app = require('express').createServer()
 var live=false;
 var streamsJSON = {count:1, video1:{address:""}}
 var currentStream = "video1";
-app.listen(8000);
+app.listen(8080);
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
