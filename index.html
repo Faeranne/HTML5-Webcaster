@@ -5,67 +5,48 @@
 <title>CH6EX6: Basic HTML5 Load Video Onto The Canvas</title>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-var socket = io.connect('http://projectmakeit.com:8000/client');
+var socket = io.connect('http://localhost:8000/client');
 var running=false;
 var videoCount = 1;
-socket.on('startfeed', function () {
-    running=true;
-    canvasApp();
-    videoElement.load();
-    videoElement.play();
+var theCanvas = document.getElementById("canvasOne");
+var context = theCanvas.getContext("2d");
+socket.on('init return',function(items){
+  videoCount=items.streams.count;
 });
-socket.on('stopfeed', function () {
-    running=false;
-});/*
-socket.on('addvideo', function () {
-    var tempElement = document.createElement("video");
-    videoDiv.appendChild(tempElement);
-    videoCount++;
-    tempElement.setAttribute("id", "stream"+videoCount);
-    tempElement.setAttribute("class", "vstream");
-    tempElement.setAttribute("style", "display:none");
-});*/
 window.addEventListener('load', eventWindowLoaded, false);
-var videoElement;
+var videoElement[10];
 var videoDiv;
-function eventWindowLoaded() {
+var currentStream=0;
+var videoCount=0;
 
-   videoElement = document.createElement("video");
+function addVideo(address){
+  videoElement[videoCount] = document.createElement("video");
+  videoDiv.appendChild(videoElement);
+  videoElement.setAttribute("src", address);
+function eventWindowLoaded() {
    videoDiv = document.createElement('div');
    document.body.appendChild(videoDiv);
-   videoDiv.appendChild(videoElement);
    videoDiv.setAttribute("style", "display:none;");
-   videoElement.setAttribute("src", "video.ogg");
-   canvasApp();
+   drawScreen();
    socket.emit('init client');
 }
 
-function canvasApp() {
-
-function  drawScreen () {
-
-      if(running){         
-      //Background
-      context.fillStyle = '#ffffaa';
-      context.fillRect(0, 0, theCanvas.width, theCanvas.height);
-      //Box
-      //video
-      context.drawImage(videoElement , 85, 30);
-      setTimeout(drawScreen, 33);
-      }else{
-      context.fillStyle = '#ffffff';
-      context.fillRect(0,0,theCanvas.width, theCanvas.height);
-      context.fillStyle = '#000000';
-      context.font = "20pt Arial";
-      context.fillText("Offline",100,100);
-      }
-   }
-
-   var theCanvas = document.getElementById("canvasOne");
-   var context = theCanvas.getContext("2d");
-   
-   setTimeout(drawScreen, 33);
-
+function  drawScreen() {
+  if(running){         
+    //Background
+    context.fillStyle = '#ffffaa';
+    context.fillRect(0, 0, theCanvas.width, theCanvas.height);
+    //Box
+    //video
+    context.drawImage(videoElement[currentStream] , 85, 30);
+  }else{
+    context.fillStyle = '#ffffff';
+    context.fillRect(0,0,theCanvas.width, theCanvas.height);
+    context.fillStyle = '#000000';
+    context.font = "20pt Arial";
+    context.fillText("Offline",100,100);
+  }
+  setTimeout(drawScreen, 33);
 }
 
 </script>

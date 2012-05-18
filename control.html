@@ -2,7 +2,7 @@
 <dev id="live">Offline</dev>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var socket = io.connect('http://projectmakeit.com:8000/controller');
+var socket = io.connect('http://localhost:8000/controller');
 var devLive = document.getElementById('live');
 socket.on('set live', function(live){
   if(live){
@@ -13,17 +13,39 @@ socket.on('set live', function(live){
     devLive.innerHTML="OFFLINE";
   }
 });
-function start(){
-  socket.emit('feedcontrol', 'start');
+socket.on('stream list init', function(items){
+  var streamDiv = document.createElement('div');
+  document.body.appendChild(streamDiv);
+  for(var x = 0; x < items.length; x++){
+    var streamStartElement = document.createElement("button");
+    var streamStopElement = document.createElement("button");
+    streamStartElement.setAttribute("onClick", "start("+items[x].stream+")");
+    streamStartElement.setAttribute("onClick", "stop("+items[x].stream+")");
+    var nameDiv = document.createElement("div");
+    nameDiv.innerHTML=items[x].stream;
+    streamDiv.appendChild(streamStartElement);
+    streamDiv.appendChild(streamStopElement);
+    streamDiv.appendChile(nameDiv);
+  }
+});
+function start(feed){
+  socket.emit('feedcontrol', {stream:feed,live:true});
   console.log('start feed');
 }
-function stop(){
-  socket.emit('feedcontrol', 'stop');
+function stop(feed){
+  socket.emit('feedcontrol', {stream:feed,live:false});
+}
+function start_all(){
+  socket.emit('broadcast control',true);
+}
+function stop_all(){
+  socket.emit('broadcast control',false);
 }
 function onload(){
   socket.emit('init');
 }
 </script>
-<button onClick="start()">Start feed</button>
-<button onClick="stop()">Stop Feed</button>
+<button onClick="start_all()">Start broadcast</button>
+<button onClick="stop_all()">Stop broadcast</button>
+
 </body>

@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>Broadcast</title>
+</head>
+<body>
+<video autoplay id="sourcevid"></video>
+<textbox id="name"></textbox>
+<textbox id="address"></textbox>
+<button id="submit" onClick="submit()">Add Stream</button>
+<button onClick="live()">Streaming</button>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io.connect('http://localhost:8000/streamer');
+var subButton = document.getElementById('submit');
+var streamName = document.getElementById('name');
+var streamAdd = document.getElementById('address');
+var streamJSON = {stream: "", address: "", streaming: false};
+var ready=false;
+
+socket.on('stream set', function(){
+  ready=true;
+});
+
+function submit(){
+  streamJSON.stream=streamName.text;
+  streamJSON.address = streamAdd.text;
+  socket.emit('add stream',streamJSON);
+}
+function live(){
+  if(ready){
+    streamJSON.streaming=true;
+    socket.emit('set streaming',streamJSON);
+  }
+}
+</script>

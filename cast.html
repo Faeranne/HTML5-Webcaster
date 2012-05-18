@@ -4,83 +4,32 @@
 </head>
 <body>
 <video autoplay id="sourcevid"></video>
-<canvas id="output"></canvas>
-<div id="log"></div>
+<input type=text id="name"></textbox>
+<input type=text id="address"></textbox>
+<button id="submit" onClick="submit()">Add Stream</button>
+<button onClick="live()">Streaming</button>
+<script src="/socket.io/socket.io.js"></script>
 <script>
-    var log = function(msg) {
-       document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + msg + "<br/>";
-    };
-    var video = document.getElementsByTagName('video')[0],
-        heading = document.getElementsByTagName('h1')[0];
-    if(navigator.getUserMedia) {
-        navigator.getUserMedia('video', successCallback, errorCallback);
+var socket = io.connect('http://localhost:8000/streamer');
+var subButton = document.getElementById('submit');
+var streamName = document.getElementById('name');
+var streamAdd = document.getElementById('address');
+var streamJSON = {stream: "", address: "", streaming: false};
+var ready=false;
 
-        function successCallback( stream ) {
-            video.src = stream;
-        };
+socket.on('stream set', function(){
+  ready=true;
+});
 
-        function errorCallback( error ) {
-            heading.textContent = "An error occurred: [CODE " + error.code + "]";
-        };
-    } else {
-        heading.textContent = "Native web camera streaming is not supported in this browser!";
-    };
-
-    var back = document.createElement('canvas');
-    var backcontext = back.getContext('2d');
-
-    var ws;
-
-    if('WebSocket' in window){
-        connect('ws://projectmakeit.com:8080/');
-    } else {
-        log ('web sockets not supported');
-     }
-
-    function connect(host) {
-        ws = new WebSocket(host);
-        ws.onopen = function () {
-            log('connected');
-        };
-
-        ws.onclose = function () {
-            log('socket closed');
-        };
-
-        ws.onerror = function (evt) {
-            log('<span style="color: red;">ERROR:</span> ' + evt.data);
-        };
-    };
-
-    function send(msg){
-        if (ws != null) {
-            if(ws.readyState === 1) {
-               ws.send(msg);
-            }
-        } else {
-            //log ('not ready yet');
-        }
-    }    
-
-    cw = 120;//240;//video.clientWidth;
-    ch = 200;//400;//video.clientHeight;
-    log('width = ' + ch);
-    back.width = cw;
-    back.height = ch;
-    draw(video, backcontext, cw, ch);
-
-    function draw(v, bc, w, h) {
-
-        // First, draw it into the backing canvas
-        bc.drawImage(v, 0, 0, w, h);
-
-        // Grab the pixel data from the backing canvas
-        var stringData=back.toDataURL();
-
-        // send it on the wire
-        send(stringData);
-
-        // Start over! 10 frames a second = 100milliseconds
-        setTimeout(function(){ draw(v, bc, w, h); });
-    }
+function submit(){
+  streamJSON.stream=streamName.text;
+  streamJSON.address = streamAdd.text;
+  socket.emit('add stream',streamJSON);
+}
+function live(){
+  if(ready){
+    streamJSON.streaming=true;
+    socket.emit('set streaming',streamJSON);
+  }
+}
 </script>
