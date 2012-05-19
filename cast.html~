@@ -11,7 +11,7 @@
 <button onClick="live()">Streaming</button>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var socket = io.connect('http://localhost:8000/streamer');
+var socket = io.connect('http://localhost:3000/streamer');
 var theCanvas = document.getElementById("canvasOne");
 var context = theCanvas.getContext("2d");
 var video = document.getElementById('client');
@@ -25,7 +25,7 @@ navigator.webkitGetUserMedia('video', function(stream) { video.src =window.webki
 function draw(v, ctx, w, h) {
   context.drawImage(v, 0, 0, w, h);
   socket.emit('data', theCanvas.toDataURL("image/png"));
-  setTimeout(function() { draw(v, ctx, w, h); }, 500);
+  setTimeout(function() { draw(v, ctx, w, h); }, 33);
 }
-draw(video, ctx, theCanvas.width, theCanvas.height);
+draw(video, context, theCanvas.width, theCanvas.height);
 </script>

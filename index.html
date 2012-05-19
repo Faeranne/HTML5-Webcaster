@@ -12,14 +12,17 @@
  Your browser does not support HTML5 Canvas.
 </canvas>
 <script type="text/javascript">
-var socket = io.connect('http://freezing-ocean-9052.herokuapp.com/client');
+var socket = io.connect('http://projectmakeit.com:3000/client');
 var theCanvas = document.getElementById("canvasOne");
 var receiver = document.getElementById('receiver');
 var context = theCanvas.getContext("2d");
 var stream = new Image();
+stream.onload = function(){
+  context.drawImage(stream,0,0); // Or at whatever offset you like
+};
 var active = false;
 socket.on('data', function(data){
-  receiver.src = data;
+  stream.src = data;
 });
 </script>
 </div>

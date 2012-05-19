@@ -5,7 +5,8 @@ var streamsJSON = {count:1, video1:{address:""}}
 var currentStream = "video1";
 var port = process.env.PORT || 3000;
 app.listen(port);
-
+io.tryTransportsOnConnectTimeout=false;
+io.rememberTransport=false;
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
