@@ -33,20 +33,19 @@ function getArray(){
   for (var i=0;i<canvaspixellen;++i) {
     bytearray[i] = canvaspixelarray[i];
   }
-  socket.send(bytearray, {binary: true, mask: true});
+  socket.send(bytearray.buffer);
 }
 
 
 
-
+socket.onload = function(){
+  
+draw(video, context, theCanvas.width, theCanvas.height);
+}
 socket.onmessage = function(event) {
-  // Normally you'd expect that event.data is a string, but in
-  // binary transfer u get a write-protected Blob of data
-  // which can be read as a stream.
 
   var reader = new FileReader();
 
-  // There is also readAsBinaryString method if you are not using typed arrays
   reader.readAsArrayBuffer(event.data);
   reader.onloadend = function() {
     var bytearray = new Uint8Array(this.result);
@@ -62,5 +61,4 @@ socket.onmessage = function(event) {
     context2.putImageData(imgdata,0,0);
   }
 };
-draw(video, context, theCanvas.width, theCanvas.height);
 </script>

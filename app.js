@@ -39,9 +39,9 @@ var controller = io
 var streamer = io
   .of('/streamer')
   .on('connection', function(socket){
-    socket.on('data', function(data){
+    socket.on('message', function(data){
       console.log(data);
-      client.emit('data',data);
+      client.send(data);
     });
   });
        

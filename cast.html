@@ -23,13 +23,16 @@ var ready=false;
 socket.on('data', function(event){
     context2.putImageData(event.data);
 });
+socket.binaryType = "arraybuffer";
 var streamdata;
 var imagedata;
 navigator.webkitGetUserMedia('video', function(stream) { video.src=webkitURL.createObjectURL(stream); }, function(error) { log('Capture error ' + error); });
 
 function draw(v, ctx, w, h) {
   context.drawImage(v, 0, 0, w, h)
-  getArray();
+  //getArray();
+  var imageuri = canvas.toDataURL("image/png");
+  socket.send('message',imageuri);
   setTimeout(function() { draw(v, ctx, w, h); }, 33);
 }
 function getArray(){
@@ -42,7 +45,7 @@ function getArray(){
   for (var i=0;i<canvaspixellen;++i) {
     bytearray[i] = canvaspixelarray[i];
   }
-  socket.send('data',{data:bytearray});
+  //socket.send(bytearray.buffer);
 }
 draw(video, context, theCanvas.width, theCanvas.height);
 function drawCanvas(data) {
