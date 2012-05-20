@@ -4,28 +4,78 @@
 </head>
 <body>
 <video autoplay="true" id="client">
-<canvas id="canvasOne" width="500" height="300">
+<canvas id="canvasOne" width="500" height="300"></canvas></video>
+<canvas id="canvasTwo" width="500" height="300"></canvas>
 <input type=text id="name"></textbox>
 <input type=text id="address"></textbox>
 <button id="submit" onClick="submit()">Add Stream</button>
 <button onClick="live()">Streaming</button>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var socket = io.connect('http://localhost:3000/streamer');
+var socket = io.connect('/streamer');
 var theCanvas = document.getElementById("canvasOne");
 var context = theCanvas.getContext("2d");
+var theCanvas2 = document.getElementById("canvasTwo");
+var context2 = theCanvas2.getContext("2d");
 var video = document.getElementById('client');
 var ready=false;
 
-socket.on('stream set', function(){
-  ready=true;
+socket.on('data', function(event){
+    // Normally you'd expect that event.data is a string, but in
+  // binary transfer u get a write-protected Blob of data
+  // which can be read as a stream.
+
+  var reader = new FileReader();
+
+  // There is also readAsBinaryString method if you are not using typed arrays
+  reader.readAsArrayBuffer(event.data);
+  reader.onloadend = function() {
+    var bytearray = new Uint8Array(this.result);
+    console.log(bytearray);
+    imageheight = theCanvas2.height;
+    imagewidth = theCanvas2.width;
+    var imgdata = context2.getImageData(0,0,imagewidth,imageheight);
+    var imgdatalen = imgdata.data.length;
+    for(var i=8;i<imgdatalen;i++)
+    {
+      imgdata.data[i] = bytearray[i];
+    }
+    context2.putImageData('data',{data:imgdata});
+  }
 });
-navigator.webkitGetUserMedia('video', function(stream) { video.src =window.webkitURL.createObjectURL(stream);; }, function(error) { log('Capture error ' + error); });
+var streamdata;
+var imagedata;
+navigator.webkitGetUserMedia('video', function(stream) { video.src=webkitURL.createObjectURL(stream); }, function(error) { log('Capture error ' + error); });
 
 function draw(v, ctx, w, h) {
-  context.drawImage(v, 0, 0, w, h);
-  socket.emit('data', theCanvas.toDataURL("image/png"));
+  context.drawImage(v, 0, 0, w, h)
+  getArray();
   setTimeout(function() { draw(v, ctx, w, h); }, 33);
 }
+function getArray(){
+  imagedata = context.getImageData(0, 0, theCanvas.width,theCanvas.height);
+  var canvaspixelarray = imagedata.data;
+ 
+  var canvaspixellen = canvaspixelarray.length;
+  bytearray = new Uint8Array(canvaspixellen);
+ 
+  for (var i=0;i<canvaspixellen;++i) {
+    bytearray[i] = canvaspixelarray[i];
+  }
+  socket.send(bytearray, {binary: true, mask: true});
+}
 draw(video, context, theCanvas.width, theCanvas.height);
+function drawCanvas(data) {
+  var bytearray=JSON.parse(data);
+  console.log(bytearray);
+  /*imageheight = theCanvas2.height;
+  imagewidth = theCanvas2.width;
+  var imgdata = context2.getImageData(0,0,imagewidth,imageheight);
+  var imgdatalen = imgdata.data.length;
+  for(var i=8;i<imgdatalen;i++)
+  {
+    imgdata.data[i] = bytearray[i];
+  }*/
+  //context2.putImageData(imgdata,0,0);
+};
 </script>

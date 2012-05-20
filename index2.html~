@@ -6,23 +6,14 @@
 <video autoplay="true" id="client">
 <canvas id="canvasOne" width="500" height="300"></canvas></video>
 <canvas id="canvasTwo" width="500" height="300"></canvas>
-<input type=text id="name"></textbox>
-<input type=text id="address"></textbox>
-<button id="submit" onClick="submit()">Add Stream</button>
-<button onClick="live()">Streaming</button>
-<script src="/socket.io/socket.io.js"></script>
 <script>
-var socket = io.connect('/streamer');
+
+var socket = new WebSocket("ws://localhost:8000");
 var theCanvas = document.getElementById("canvasOne");
 var context = theCanvas.getContext("2d");
 var theCanvas2 = document.getElementById("canvasTwo");
 var context2 = theCanvas2.getContext("2d");
 var video = document.getElementById('client');
-var ready=false;
-
-socket.on('data', function(event){
-    context2.putImageData(event.data);
-});
 var streamdata;
 var imagedata;
 navigator.webkitGetUserMedia('video', function(stream) { video.src=webkitURL.createObjectURL(stream); }, function(error) { log('Capture error ' + error); });
@@ -42,20 +33,34 @@ function getArray(){
   for (var i=0;i<canvaspixellen;++i) {
     bytearray[i] = canvaspixelarray[i];
   }
-  socket.send('data',{data:bytearray});
+  socket.send(bytearray, {binary: true, mask: true});
 }
-draw(video, context, theCanvas.width, theCanvas.height);
-function drawCanvas(data) {
-  var bytearray=JSON.parse(data);
-  console.log(bytearray);
-  /*imageheight = theCanvas2.height;
-  imagewidth = theCanvas2.width;
-  var imgdata = context2.getImageData(0,0,imagewidth,imageheight);
-  var imgdatalen = imgdata.data.length;
-  for(var i=8;i<imgdatalen;i++)
-  {
-    imgdata.data[i] = bytearray[i];
-  }*/
-  //context2.putImageData(imgdata,0,0);
+
+
+
+
+socket.onmessage = function(event) {
+  // Normally you'd expect that event.data is a string, but in
+  // binary transfer u get a write-protected Blob of data
+  // which can be read as a stream.
+
+  var reader = new FileReader();
+
+  // There is also readAsBinaryString method if you are not using typed arrays
+  reader.readAsArrayBuffer(event.data);
+  reader.onloadend = function() {
+    var bytearray = new Uint8Array(this.result);
+    console.log(bytearray);
+    imageheight = theCanvas2.height;
+    imagewidth = theCanvas2.width;
+    var imgdata = context2.getImageData(0,0,imagewidth,imageheight);
+    var imgdatalen = imgdata.data.length;
+    for(var i=8;i<imgdatalen;i++)
+    {
+      imgdata.data[i] = bytearray[i];
+    }
+    context2.putImageData(imgdata,0,0);
+  }
 };
+draw(video, context, theCanvas.width, theCanvas.height);
 </script>

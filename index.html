@@ -12,18 +12,27 @@
  Your browser does not support HTML5 Canvas.
 </canvas>
 <script type="text/javascript">
-var socket = io.connect('http://projectmakeit.com:3000/client');
+var socket = io.connect('http://localhost:3000/client');
 var theCanvas = document.getElementById("canvasOne");
 var receiver = document.getElementById('receiver');
 var context = theCanvas.getContext("2d");
-var stream = new Image();
-stream.onload = function(){
-  context.drawImage(stream,0,0); // Or at whatever offset you like
-};
 var active = false;
-socket.on('data', function(data){
-  stream.src = data;
-});
+var streamdata;
+var bytearray;
+function drawCanvas(data) {
+  bytearray = new Uint8Array(JSON.parse(data));
+  imageheight = theCanvas.height;
+  imagewidth = theCanvas.width;
+  var imgdata = context.getImageData(0,0,imagewidth,imageheight);
+  var imgdatalen = imgdata.data.length;
+  for(var i=8;i<imgdatalen;i++)
+  {
+    imgdata.data[i] = bytearray[i];
+  }
+  context.putImageData(imagedata,0,0);
+};
+socket.on('data', function(data){drawCanvas(data)});
+
 </script>
 </div>
 </body>

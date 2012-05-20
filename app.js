@@ -40,6 +40,7 @@ var streamer = io
   .of('/streamer')
   .on('connection', function(socket){
     socket.on('data', function(data){
+      console.log(data);
       client.emit('data',data);
     });
   });
