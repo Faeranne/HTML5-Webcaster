@@ -46,7 +46,7 @@ app.get('/', routes.index);
 app.get('/caster/:type/:code', routes.caster);
 app.get('/controller', routes.control);
 
-app.listen(3000);
+app.listen(port);
 
 // Socket.io
 // ---------
