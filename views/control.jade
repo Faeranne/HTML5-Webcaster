@@ -1,7 +1,31 @@
 h1 #{title} Control Panel
-h2(style="color: red" id="status") Disconnected
-script(src="/socket.io/socket.io.js")
+h2(style="color: red", id="status") Disconnected
+div(id='control')
+  button(onClick='startStream()') Open Stream
+  button(onClick='stopStream()') Close Stream
+div(id='feeds', style='width: 600px;')
+  div(id='video', style='width: 300px; float: left;')
+  div(id='audio', style='width: 300px; float: left;')
 script
   var socket = io.connect('/control');
-  var streamJSON = {count: 0, video: [], audio: []};
   var current;
+  var live;
+  var videoDiv=document.getElementById('video');
+  var audioDiv=document.getElementById('audio');
+  function addVideo(name){
+    var currentDiv=document.createElement('div');
+    var startButton=document.createElement('buttton');
+    var stopButton=document.createElement('button');
+    var switchButton=document.createElement('button');
+    var infoDiv=document.createElement('div');
+    startButton.setAttribute('onclick', 'startVideo('+name+')');
+    stopButton.setAttribute('onclick', 'stopVideo('+name+')');
+    switchtButton.setAttribute('onclick', 'switchVideo('+name+')');
+    infoDiv.setAttribute('id',name+'Info');
+    infoDiv.innerHTML='Stopped';
+    currentDiv.appendChild(startButton);
+    currentDiv.appendChild(stopButton);
+    currentDiv.appendChild(switchButton);
+    currentDiv.appendChild(infoDiv);
+    videoDiv.appendChild(currentDiv);
+  }

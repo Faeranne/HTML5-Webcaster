@@ -5,7 +5,6 @@ div(id="base")
   div(id="audio")
   div(id="video")
 div(id="message")
-script(src="/socket.io/socket.io.js")
 script
   var socket = io.connect('/client');
   var videoDiv;
@@ -16,7 +15,7 @@ script
   var messageDiv;
   var audioDiv;
   var videoDiv;
-  
+  var first=true;  
   function initClient(){
     socket.emit('init client','hello');
   }
@@ -28,26 +27,26 @@ script
   canvas = document.createElement('canvas');
   context = canvas.getContext("2d");
   baseDiv.appendChild(canvas);
-  function addVideo(event){
+  function addVideo(name){
     var videoElement;
     var id = event.id;
     var source = event.source;
     videoElement = document.createElement('video');
     videoElement.setAttribute('class','videoStream');
-    videoElement.setAttribute('id',id);
-    videoElement.setAttribute('src',source);
+    videoElement.setAttribute('id',name);
+    videoElement.setAttribute('src','server=rtmp://video.projectmakeit.com/live&stream='+source);
     videoDiv.appendChild(videoElement);
     videoElement.load();
     videoElement.play();
   }
-  function addAudio(event){
+  function addAudio(name){
     var audioElement;
     var id = event.id;
     var source = event.source;
     audioElement = document.createElement('audio');
     audioElement.setAttribute('class','audioStream');
-    audioElement.setAttribute('id',id);
-    audioElement.setAttribute('src',source);
+    audioElement.setAttribute('id',name);
+    audioElement.setAttribute('src','http://audio.projectmakeit.com:8000/'+name+'.ogg');
     audioDiv.appendChild(audioElement);
     audioElement.play();
   }
@@ -74,4 +73,4 @@ script
   socket.on('add audio',function(data){addAudio(data)});
   socket.on('change video',function(data){changeVideo(data)});
   socket.on('set message',function(data){setMessage(data)});
-
+  socket.on('reload',function(){if(first){first=false;}else{location.reload()}});

@@ -9,14 +9,6 @@ var express = require('express')
 var app = module.exports = express.createServer()
   , io = require('socket.io').listen(app);
 
-var streamJSON;
-
-var audioCount;
-var videoCount;
-var audioName=new Array();
-var videoName=new Array();
-var audioAddr=new Array();
-var videoAddr=new Array();
 /* Test Data Below
 audioCount=2;
 videoCount=1; 	
@@ -50,26 +42,34 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
+app.get('/caster/:type/:code', routes.caster);
+app.get('/controller', routes.control);
 
 app.listen(3000);
 
 // Socket.io
 // ---------
-// client:functions     
+// client:functions  
 var client = io
   .of('/client')
-  .on('connection', function (socket) {
-    if(audioCount>0){
-      for(var i = 0;i<audioCount;i++){
-        var tmpJSON={id:audioName[i],source:audioAddr[i]}
-        socket.emit('add audio',tmpJSON);
+  .on('connection', function (socket) {   
+    socket.emit('reload');
+    if(routes.audioCasterName.length>0){
+      for(var i = 0;i<routes.audioCasterName.length;i++){
+        socket.emit('add audio',routes.audioCasterName[i]);
       }
     }
-    if(videoCount>0){
-      for(var i = 0;i<videoCount;i++){
-        var tmpJSON={id:videoName[i],source:videoAddr[i]}
-        socket.emit('add video',tmpJSON);
+    if(routes.videoCasterName.length>0){
+      for(var i = 0;i<routes.videoCasterName.length;i++){
+        socket.emit('add video',routes.videoCasterName[i]);
       }
     }
+  });
+
+var caster = io
+  .of('/cast')
+  .on('connection', function (socket) {   
+    socket.emit('reload');   
+    
   });
 
