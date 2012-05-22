@@ -8,6 +8,7 @@ var express = require('express')
 
 var app = module.exports = express.createServer()
   , io = require('socket.io').listen(app);
+var port = process.env.PORT || 3000;
 
 /* Test Data Below
 audioCount=2;
@@ -49,7 +50,7 @@ app.listen(3000);
 
 // Socket.io
 // ---------
-// client:functions  
+// client  
 var client = io
   .of('/client')
   .on('connection', function (socket) {   
@@ -66,10 +67,52 @@ var client = io
     }
   });
 
+// caster
+
 var caster = io
   .of('/cast')
   .on('connection', function (socket) {   
     socket.emit('reload');   
-    
+    socket.on('readyVideo', function (name){
+      controller.emit('video ready', name);
+    });
+    socket.on('readyAudio', function (name){
+      controller.emit('audio ready', name);
+    });
+  });
+var controller = io
+  .of('/control')
+  .on('connection', function (socket) {
+    socket.emit('reload');
+    socket.on('start stream',function (){
+      client.emit('start stream');
+      controller.emit('start stream');
+    });
+    socket.on('stop stream', function (){
+      client.emit('stop stream');
+      controller.emit('stop stream');
+    });
+    socket.on('start video', function (name){
+      client.emit('start video', name);
+      controller.emit('start video', name);
+    });
+    socket.on('new video stream', function (event){
+      var id = event.id;
+      var code = event.code;
+        var z = routes.videoCasterCode.length;
+        routes.videoCasterCode[z] = code;
+        routes.videoCasterName[z] = id;
+        client.emit('add video', id);
+        controller.emit('add video', id);
+    });
+    socket.on('new audio stream', function (event){
+      var id = event.id;
+      var code = event.code;
+        var z = routes.audioCasterCode.length;
+        routes.audioCasterCode[z] = code;
+        routes.audioCasterName[z] = id;
+        client.emit('add audio', id);
+        controller.emit('add audio', id);
+    });
   });
 

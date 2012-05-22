@@ -29,20 +29,16 @@ script
   baseDiv.appendChild(canvas);
   function addVideo(name){
     var videoElement;
-    var id = event.id;
-    var source = event.source;
     videoElement = document.createElement('video');
     videoElement.setAttribute('class','videoStream');
     videoElement.setAttribute('id',name);
-    videoElement.setAttribute('src','server=rtmp://video.projectmakeit.com/live&stream='+source);
+    videoElement.setAttribute('src','http://stream.projectmakeit.com:8000/'+name+'.ogg');
     videoDiv.appendChild(videoElement);
     videoElement.load();
     videoElement.play();
   }
   function addAudio(name){
     var audioElement;
-    var id = event.id;
-    var source = event.source;
     audioElement = document.createElement('audio');
     audioElement.setAttribute('class','audioStream');
     audioElement.setAttribute('id',name);

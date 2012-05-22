@@ -1,5 +1,5 @@
 h1=title
-embed(id="swf", src="public/webcam.swf", bgcolor="#fffffff", width="800", height="600", quality="medium", allowScriptAccess="always", type="application/x-shockwave-flash", flashvars="server=rtmp://localhost/live&stream=#{name}", pluginspage="http://www.macromedia.com/go/getflashplayer")
+embed(id="swf", src="/webcam.swf", bgcolor="#fffffff", width="800", height="600", quality="medium", allowScriptAccess="always", type="application/x-shockwave-flash", flashvars="server=rtmp://projetmakeit.com:1225/live&stream=#{name}", pluginspage="http://www.macromedia.com/go/getflashplayer")
 script
   var socket = io.connect('/caster');
   var swf = document.getElementById('swf');

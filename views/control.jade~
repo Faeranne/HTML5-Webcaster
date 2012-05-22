@@ -2,16 +2,26 @@ h1 #{title} Control Panel
 h2(style="color: red", id="status") Disconnected
 div(id='control')
   button(onClick='startStream()') Open Stream
-  button(onClick='stopStream()') Cose Stream
+  button(onClick='stopStream()') Close Stream
 div(id='feeds', style='width: 600px;')
   div(id='video', style='width: 300px; float: left;')
   div(id='audio', style='width: 300px; float: left;')
+input(type='text', id='name')
+input(type='text', id='code')
+button(onClick='addVideoStream()') Add Video Stream
+button(onClick='addAudioStream()') Add Audio Stream
 script
   var socket = io.connect('/control');
   var current;
   var live;
   var videoDiv=document.getElementById('video');
   var audioDiv=document.getElementById('audio');
+  function startStream(){
+    socket.emit('start stream');
+  }
+  function stopStream(){
+    socket.emit('start stream');
+  }
   function addVideo(name){
     var currentDiv=document.createElement('div');
     var startButton=document.createElement('buttton');
@@ -21,7 +31,7 @@ script
     startButton.setAttribute('onclick', 'startVideo('+name+')');
     stopButton.setAttribute('onclick', 'stopVideo('+name+')');
     switchtButton.setAttribute('onclick', 'switchVideo('+name+')');
-    infoDiv.setAttribute('id',name+'Info');
+    infoDiv.setAttribute('id',name+'VInfo');
     infoDiv.innerHTML='Stopped';
     currentDiv.appendChild(startButton);
     currentDiv.appendChild(stopButton);
@@ -29,3 +39,32 @@ script
     currentDiv.appendChild(infoDiv);
     videoDiv.appendChild(currentDiv);
   }
+  function addAudio(name){
+    var currentDiv=document.createElement('div');
+    var startButton=document.createElement('buttton');
+    var stopButton=document.createElement('button');
+    var infoDiv=document.createElement('div');
+    startButton.setAttribute('onclick', 'startAudio('+name+')');
+    stopButton.setAttribute('onclick', 'stopAudio('+name+')');
+    infoDiv.setAttribute('id',name+'AInfo');
+    infoDiv.innerHTML='Stopped';
+    currentDiv.appendChild(startButton);
+    currentDiv.appendChild(stopButton);
+    currentDiv.appendChild(infoDiv);
+    audioDiv.appendChild(currentDiv);
+  }
+  function addVideoStream(){
+    var name = document.getElementById('name').value
+    var code = document.getElementById('code').value
+    var json = {id: name, code: code}
+    socket.emit('new video stream', json);
+  }
+  function addAudioStream(){
+    var name = document.getElementById('name').value
+    var code = document.getElementById('code').value
+    var json = {id: name, code: code}
+    socket.emit('new audio stream', json);
+  }
+
+  socket.on('add video',function(data){addVideo(data)});
+  socket.on('add audio',function(data){addAudio(data)});
