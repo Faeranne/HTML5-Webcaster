@@ -19,7 +19,7 @@ var audioAddr=new Array();
 var videoAddr=new Array();
 /* Test Data Below
 audioCount=2;
-videoCount=1;
+videoCount=1; 	
 audioName[0]='test';
 audioAddr[0]='localhost';
 audioName[1]='test2';
