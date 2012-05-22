@@ -1,0 +1,7 @@
+h1 #{title} Control Panel
+h2(style="color: red" id="status") Disconnected
+script(src="/socket.io/socket.io.js")
+script
+  var socket = io.connect('/control');
+  var streamJSON = {count: 0, video: [], audio: []};
+  var current;

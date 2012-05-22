@@ -1,47 +1,71 @@
-var app = require('express').createServer()
+
+/**
+ * Module dependencies.
+ */
+
+var express = require('express')
+  , routes = require('./routes');
+
+var app = module.exports = express.createServer()
   , io = require('socket.io').listen(app);
-var live=false;
-var streamsJSON = {count:1, video1:{address:""}}
-var currentStream = "video1";
-var port = process.env.PORT || 3000;
-app.listen(port);
-io.tryTransportsOnConnectTimeout=false;
-io.rememberTransport=false;
-app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/index.html');
-});
-app.get('/video.ogg', function (req, res) {
-  res.sendfile(__dirname + '/pass-countdown.ogg');
-});
-app.get('/controller/:code', function (req, res) {
-  if(req.params.code!='1525'){
-    res.send('bad code');
-    return;
-  }
-  res.sendfile(__dirname + '/control.html');
-});
-app.get('/streamer/:code', function (req, res) {
-  if(req.params.code!='1234'){
-    res.send('bad code');
-    return;
-  }
-  res.sendfile(__dirname + '/cast.html');
+
+var streamJSON;
+
+var audioCount=2;
+var videoCount=1;
+var audioName=new Array();
+var videoName=new Array();
+var audioAddr=new Array();
+var videoAddr=new Array();
+audioName[0]='test';
+audioAddr[0]='localhost';
+audioName[1]='test2';
+audioAddr[1]='localhost:3001';
+videoName[0]='test3';
+videoAddr[0]='localhost:3002';
+
+// Configuration
+
+app.configure(function(){
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler());
+});
+
+// Routes
+
+app.get('/', routes.index);
+
+app.listen(3000);
+
+// Socket.io
+// ---------
+// client:functions     
 var client = io
   .of('/client')
   .on('connection', function (socket) {
+    if(audioCount>0){
+      for(var i = 0;i<audioCount;i++){
+        var tmpJSON={id:audioName[i],source:audioAddr[i]}
+        socket.emit('add audio',tmpJSON);
+      }
+    }
+    if(videoCount>0){
+      for(var i = 0;i<videoCount;i++){
+        var tmpJSON={id:videoName[i],source:videoAddr[i]}
+        socket.emit('add video',tmpJSON);
+      }
+    }
   });
-var controller = io
-  .of('/controller')
-  .on('connection', function (socket) {
-  });
-var streamer = io
-  .of('/streamer')
-  .on('connection', function(socket){
-    socket.on('data', function(data){
-      console.log(data);
-      client.emit('data',data);
-    });
-  });
-       
+

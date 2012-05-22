@@ -1,0 +1,77 @@
+body(onload='initClient()')
+h1= title
+p Welcome to #{title}
+div(id="base")
+  div(id="audio")
+  div(id="video")
+div(id="message")
+script(src="/socket.io/socket.io.js")
+script
+  var socket = io.connect('/client');
+  var videoDiv;
+  var canvas;
+  var activeVideo;
+  var context;
+  var baseDiv;
+  var messageDiv;
+  var audioDiv;
+  var videoDiv;
+  
+  function initClient(){
+    socket.emit('init client','hello');
+  }
+
+  baseDiv = document.getElementById('base');
+  messageDiv = document.getElementById('message');
+  videoDiv = document.getElementById('video');
+  audioDiv = document.getElementById('audio');
+  canvas = document.createElement('canvas');
+  context = canvas.getContext("2d");
+  baseDiv.appendChild(canvas);
+  function addVideo(event){
+    var videoElement;
+    var id = event.id;
+    var source = event.source;
+    videoElement = document.createElement('video');
+    videoElement.SetAttribute('class','videoStream');
+    videoElement.SetAttribute('id',id);
+    videoElement.SetAttribute('src',source);
+    videoDiv.appendChild(videoElement);
+    videoElement.load();
+    videoElement.play();
+  }
+  function addAudio(event){
+    var audioElement;
+    var id = event.id;
+    var source = event.source;
+    audioElement = document.createElement('audio');
+    audioElement.setAttribute('class','audioStream');
+    audioElement.setAttribute('id',id);
+    audioElement.setAttribute('src',source);
+    audioDiv.appendChild(audioElement);
+    audioElement.play();
+  }
+  function changeVideo(id){
+    //TODO: perform animation here
+    //For now just set the new video id.
+    activeVideo = document.getElementById(id);
+  }
+  function setMessage(text){
+    messageDiv.innerHTML(text);
+  }
+  function draw(){
+    if(!live){ return false; }
+    context.drawImage(activeVideo, 0, 0, canvas.width, canvas.height);
+    setTimeout(draw(),33);
+  }
+  socket.on('start video', function(id){ 
+    changeVideo(id);
+    live = true;
+    draw();
+  });
+  socket.on('stop video', function(){live=false;});
+  socket.on('add video',function(data){addVideo(data)});
+  socket.on('add audio',function(data){addAudio(data)});
+  socket.on('change video',function(data){changeVideo(data)});
+  socket.on('set message',function(data){setMessage(data)});
+
