@@ -84,6 +84,16 @@ var controller = io
   .of('/control')
   .on('connection', function (socket) {
     socket.emit('reload');
+    if(routes.audioCasterName.length>0){
+      for(var i = 0;i<routes.audioCasterName.length;i++){
+        socket.emit('add audio',{id:routes.audioCasterName[i], code:routes.audioCasterCode[i]});
+      }
+    }
+    if(routes.videoCasterName.length>0){
+      for(var i = 0;i<routes.videoCasterName.length;i++){
+        socket.emit('add video',{id:routes.videoCasterName[i], code:routes.videoCasterCode[i]});
+      }
+    }
     socket.on('reboot', function (){
       setVars();
       reconnect();
@@ -104,19 +114,51 @@ var controller = io
       var id = event.id;
       var code = event.code;
         var z = routes.videoCasterCode.length;
+        if(routes.audioCasterName.length>0){
+          for(var i = 0;i<routes.audioCasterName.length;i++){
+            if(id == routes.audioCasterName[i]||code == routes.audioCasterCode){
+              socket.emit('bad video');
+              return false;
+            }
+          }
+        }
+        if(routes.videoCasterName.length>0){
+          for(var i = 0;i<routes.videoCasterName.length;i++){
+            if(id == routes.videoCasterName[i]||code == routes.videoCasterCode){
+              socket.emit('bad video');
+              return false;
+            }
+          }
+        }
         routes.videoCasterCode[z] = code;
         routes.videoCasterName[z] = id;
-        client.emit('add video', id);
-        controller.emit('add video', id);
+        client.emit('add video', {id:id, code:code});
+        controller.emit('add video', {id:id, code:code});
     });
     socket.on('new audio stream', function (event){
       var id = event.id;
       var code = event.code;
         var z = routes.audioCasterCode.length;
+        if(routes.audioCasterName.length>0){
+          for(var i = 0;i<routes.audioCasterName.length;i++){
+            if(id == routes.audioCasterName[i]||code == routes.audioCasterCode){
+              socket.emit('bad audio');
+              return false;
+            }
+          }
+        }
+        if(routes.videoCasterName.length>0){
+          for(var i = 0;i<routes.videoCasterName.length;i++){
+            if(id == routes.videoCasterName[i]||code == routes.videoCasterCode){
+              socket.emit('bad audio');
+              return false;
+            }
+          }
+        }
         routes.audioCasterCode[z] = code;
         routes.audioCasterName[z] = id;
-        client.emit('add audio', id);
-        controller.emit('add audio', id);
+        client.emit('add audio', {id:id, code:code});
+        controller.emit('add audio', {id:id, code:code});
     });
   });
 
@@ -127,7 +169,7 @@ function setVars(){
   routes.videoCasterName=new Array();
 }
 
-function restart(){
+function reconnect(){
   client.emit('reload');
   caster.emit('reload');
   controller.emit('reload');
