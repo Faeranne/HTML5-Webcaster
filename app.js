@@ -7,7 +7,7 @@ var express = require('express')
   , routes = require('./routes');
 
 var app = module.exports = express.createServer()
-  , io = require('socket.io').listen(app);
+  , io = require('socket.io').listen(app, {rememberTransport:false});
 var port = process.env.PORT || 3000;
 
 /* Test Data Below
