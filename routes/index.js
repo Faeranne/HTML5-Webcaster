@@ -21,7 +21,7 @@ exports.caster = function(req, res){
   if(req.params.type=="audio"){
     if(audioCasterCode.length){
       for(var i=0;i<audioCasterCode.length;i++){
-        if(audioCasterCode[i]=req.params.code){res.render('caster', { title: 'Audio Caster', name:audioCasterName[i]}, type: 'audio'); return true;}
+        if(audioCasterCode[i]=req.params.code){res.render('caster', { title: 'Audio Caster', name:audioCasterName[i], type:'audio'}); return true;}
       }
   res.render('error', { title: 'Error', text: 'Invalid audio access code' })
   return false;
@@ -30,7 +30,7 @@ exports.caster = function(req, res){
   if(req.params.type=="video"){
   if(videoCasterCode.length){
       for(var i=0;i<videoCasterCode.length;i++){
-        if(videoCasterCode[i]=req.params.code){res.render('caster', { title: 'Video Caster', name:videoCasterName[i]}, type: 'video'); return true;}
+        if(videoCasterCode[i]=req.params.code){res.render('caster', { title: 'Video Caster', name:videoCasterName[i],type: 'video'}); return true;}
       }
   res.render('error', { title: 'Error', text: 'Invalid video access code' })
   return false;
