@@ -121,10 +121,10 @@ var controller = io
   });
 
 function setVars(){
-  var routes.audioCasterCode=new Array();
-  var routes.audioCasterName=new Array();
-  var routes.videoCasterCode=new Array();
-  var routes.videoCasterName=new Array();
+  routes.audioCasterCode=new Array();
+  routes.audioCasterName=new Array();
+  routes.videoCasterCode=new Array();
+  routes.videoCasterName=new Array();
 }
 
 function restart(){
