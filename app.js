@@ -84,6 +84,10 @@ var controller = io
   .of('/control')
   .on('connection', function (socket) {
     socket.emit('reload');
+    socket.on('reboot', function (){
+      setVars();
+      reconnect();
+    });
     socket.on('start stream',function (){
       client.emit('start stream');
       controller.emit('start stream');
@@ -115,4 +119,17 @@ var controller = io
         controller.emit('add audio', id);
     });
   });
+
+function setVars(){
+  var routes.audioCasterCode=new Array();
+  var routes.audioCasterName=new Array();
+  var routes.videoCasterCode=new Array();
+  var routes.videoCasterName=new Array();
+}
+
+function restart(){
+  client.emit('reload');
+  caster.emit('reload');
+  controller.emit('reload');
+}
 

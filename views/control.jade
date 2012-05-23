@@ -31,6 +31,9 @@ script
     startButton.setAttribute('onclick', 'startVideo('+name+')');
     stopButton.setAttribute('onclick', 'stopVideo('+name+')');
     switchButton.setAttribute('onclick', 'switchVideo('+name+')');
+    startButton.innerHTML='Start';
+    stopButton.innerHTML='Stop';
+    switchButton.innerHTML='Live';
     infoDiv.setAttribute('id',name+'VInfo');
     infoDiv.innerHTML='Stopped';
     currentDiv.appendChild(startButton);

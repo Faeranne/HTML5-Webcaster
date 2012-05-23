@@ -1,7 +1,28 @@
 h1=title
-embed(id="swf", src="/webcam.swf", bgcolor="#fffffff", width="800", height="600", quality="medium", allowScriptAccess="always", type="application/x-shockwave-flash", flashvars="server=rtmp://projetmakeit.com:1225/live&stream=#{name}", pluginspage="http://www.macromedia.com/go/getflashplayer")
+/*embed(id="swf", src="/webcam.swf", bgcolor="#fffffff", width="800", height="600", quality="medium", allowScriptAccess="always", type="application/x-shockwave-flash", flashvars="server=rtmp://projetmakeit.com:1225/live&stream=#{name}", pluginspage="http://www.macromedia.com/go/getflashplayer")
 script
   var socket = io.connect('/caster');
   var swf = document.getElementById('swf');
   
+  socket.on('reload',function(){if(first){first=false;}else{location.reload()}});
+*/
+h2 Attention!  All casters are to use a software casting client capable of ogg format.
+h2 This is due to a lack of web based webcam streaming available. 
+h2 When HTML5 is avalible or another remidie is provided, more information will be given.
+p Please verify that the parameters are set properly.
+p
+p Your settings are:
+p
+p streaming server address = stream.projectmakeit.com
+p port = 8000
+p stream = #{name}.ogg
+p login:pass = source:stream
+p 
+p Set the stream to include just #{type} content unless told otherwise.
+p For help contact tulsatt@projectmakeit.com before the show.
+p
+p We appreciate your contributions to the show.
+p -TulsaTechTalk
+script
+  var socket = io.connect('/caster');
   socket.on('reload',function(){if(first){first=false;}else{location.reload()}});
