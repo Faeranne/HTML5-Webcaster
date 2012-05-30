@@ -55,7 +55,7 @@ var client = io
   .of('/client')
   .on('connection', function (socket) {   
     socket.emit('reload');
-    if(routes.audioCasterName.length>0){
+/*    if(routes.audioCasterName.length>0){
       for(var i = 0;i<routes.audioCasterName.length;i++){
         socket.emit('add audio',routes.audioCasterName[i]);
       }
@@ -64,7 +64,7 @@ var client = io
       for(var i = 0;i<routes.videoCasterName.length;i++){
         socket.emit('add video',routes.videoCasterName[i]);
       }
-    }
+    }*/
   });
 
 // caster
@@ -73,14 +73,12 @@ var caster = io
   .of('/cast')
   .on('connection', function (socket) {   
     socket.emit('reload');   
-    socket.on('readyVideo', function (name){
-      controller.emit('video ready', name);
-    });
-    socket.on('readyAudio', function (name){
-      controller.emit('audio ready', name);
+    socket.on('frame',function(data){
+      console.log(data);
+      client.emit('frame', data);
     });
   });
-var controller = io
+/*var controller = io
   .of('/control')
   .on('connection', function (socket) {
     socket.emit('reload');
@@ -161,7 +159,7 @@ var controller = io
         controller.emit('add audio', {id:id, code:code});
     });
   });
-
+*/
 function setVars(){
   routes.audioCasterCode=new Array();
   routes.audioCasterName=new Array();

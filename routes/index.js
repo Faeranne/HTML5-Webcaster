@@ -18,7 +18,7 @@ exports.control = function(req, res){
   res.render('control', { title: 'Tulsa Tech Talk'  })
 };
 exports.caster = function(req, res){
-  if(req.params.type=="audio"){
+  /*if(req.params.type=="audio"){
     if(audioCasterCode.length){
       for(var i=0;i<audioCasterCode.length;i++){
         if(audioCasterCode[i]=req.params.code){res.render('caster', { title: 'Audio Caster', name:audioCasterName[i], type:'audio'}); return true;}
@@ -35,5 +35,6 @@ exports.caster = function(req, res){
   res.render('error', { title: 'Error', text: 'Invalid video access code' })
   return false;
   }res.render('error', { title: 'Error', text: 'No current video access codes' })
-  }
+  }*/
+  res.render('caster', { title: 'Caster'});
 };
