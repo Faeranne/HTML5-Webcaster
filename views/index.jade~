@@ -1,72 +1,20 @@
-body(onload='initClient()')
+body
 h1= title
 p Welcome to #{title}
-div(id="base")
-  div(id="audio")
-  div(id="video")
+canvas(id='stream')
 div(id="message")
 script
   var socket = io.connect('/client');
-  var videoDiv;
-  var canvas;
-  var activeVideo;
-  var context;
-  var baseDiv;
-  var messageDiv;
-  var audioDiv;
-  var videoDiv;
+  var canvas = document.getElementById('stream');
+  var context = canvas.getContext('2d');
+  var video_image = new Image();
   var first=true;  
-  function initClient(){
-    socket.emit('init client','hello');
+  function onFrame(data){
+    video_image.src = data;
+    video_image.onload = function(){
+      context.drawImage(video_image, 100, 100);
+    }
   }
 
-  baseDiv = document.getElementById('base');
-  messageDiv = document.getElementById('message');
-  videoDiv = document.getElementById('video');
-  audioDiv = document.getElementById('audio');
-  canvas = document.createElement('canvas');
-  context = canvas.getContext("2d");
-  baseDiv.appendChild(canvas);
-  function addVideo(name){
-    var videoElement;
-    videoElement = document.createElement('video');
-    videoElement.setAttribute('class','videoStream');
-    videoElement.setAttribute('id',name);
-    videoElement.setAttribute('src','http://projectmakeit.com:8001/'+name+'.ogg');
-    videoDiv.appendChild(videoElement);
-    videoElement.load();
-    videoElement.play();
-  }
-  function addAudio(name){
-    var audioElement;
-    audioElement = document.createElement('audio');
-    audioElement.setAttribute('class','audioStream');
-    audioElement.setAttribute('id',name);
-    audioElement.setAttribute('src','http://audio.projectmakeit.com:8001/'+name+'.ogg');
-    audioDiv.appendChild(audioElement);
-    audioElement.play();
-  }
-  function changeVideo(id){
-    //TODO: perform animation here
-    //For now just set the new video id.
-    activeVideo = document.getElementById(id);
-  }
-  function setMessage(text){
-    messageDiv.innerHTML(text);
-  }
-  function draw(){
-    if(!live){ return false; }
-    context.drawImage(activeVideo, 0, 0, canvas.width, canvas.height);
-    setTimeout(draw(),33);
-  }
-  socket.on('start video', function(id){ 
-    changeVideo(id);
-    live = true;
-    draw();
-  });
-  socket.on('stop video', function(){live=false;});
-  socket.on('add video',function(data){addVideo(data)});
-  socket.on('add audio',function(data){addAudio(data)});
-  socket.on('change video',function(data){changeVideo(data)});
-  socket.on('set message',function(data){setMessage(data)});
+  socket.on('frame', function(data){onFrame(data);});
   socket.on('reload',function(){if(first){first=false;}else{location.reload()}});
